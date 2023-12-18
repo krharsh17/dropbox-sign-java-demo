@@ -25,12 +25,12 @@ public class DropboxSignDemoController {
     @Autowired
     DropboxSignDemoService dropboxSignDemoService;
 
-    @PostMapping("/hello/embeddedsign")
+    @PostMapping("/sign/embeddedsign")
     public String embeddedSignatureRequest() {
         return dropboxSignDemoService.sendEmbeddedSignatureRequest();
     }
 
-    @PostMapping(value = "/hello/webhook")
+    @PostMapping(value = "/sign/webhook")
     public String webhook(@RequestParam String json) throws Exception {
 
         String hsApiKey = env.getProperty("HS_API_KEY");
@@ -53,12 +53,12 @@ public class DropboxSignDemoController {
                         logger.info("Signature request signed " + eventPayload);
                         break;
                 default:
-                    logger.info("HS event occured " + EventCallbackHelper.getCallbackType(callbackEvent));
+                    logger.info("DS event occured " + EventCallbackHelper.getCallbackType(callbackEvent));
                     break;
             }
         }
 
-        return "Hello API Event Received";
+        return "Dropbox Sign API Event Received";
     }
 
 }
