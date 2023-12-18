@@ -19,8 +19,8 @@ public class DropboxSignDemoService {
 
     public String sendEmbeddedSignatureRequest() {
         try {
-            String hsApiKey = env.getProperty("HS_API_KEY");
-            String hsTemplateId = env.getProperty("HS_TEMPLATE_ID");
+            String dsApiKey = env.getProperty("DS_API_KEY");
+            String dsTemplateId = env.getProperty("DS_TEMPLATE_ID");
             String signerName = env.getProperty("SIGNER_NAME");
             String signerEmail = env.getProperty("SIGNER_EMAIL");
             String signerRole = env.getProperty("SIGNER_ROLE");
@@ -30,7 +30,7 @@ public class DropboxSignDemoService {
             // Configure HTTP basic authorization: api_key
             var apiKey = (HttpBasicAuth) apiClient
                     .getAuthentication("api_key");
-            apiKey.setUsername(hsApiKey);
+            apiKey.setUsername(dsApiKey);
 
             var signatureRequestApi = new SignatureRequestApi(apiClient);
 
@@ -41,7 +41,7 @@ public class DropboxSignDemoService {
 
 
             var data = new SignatureRequestCreateEmbeddedWithTemplateRequest()
-                    .templateIds(List.of(hsTemplateId))
+                    .templateIds(List.of(dsTemplateId))
                     .signers(List.of(signer))
                     .testMode(true);
 
