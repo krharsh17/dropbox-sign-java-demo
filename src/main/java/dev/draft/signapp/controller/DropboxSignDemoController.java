@@ -33,11 +33,11 @@ public class DropboxSignDemoController {
     @PostMapping(value = "/sign/webhook")
     public String webhook(@RequestParam String json) throws Exception {
 
-        String hsApiKey = env.getProperty("HS_API_KEY");
+        String dsApiKey = env.getProperty("DS_API_KEY");
 
         var callbackEvent = EventCallbackRequest.init(json);
 
-        boolean validRequest = EventCallbackHelper.isValid(hsApiKey, callbackEvent);
+        boolean validRequest = EventCallbackHelper.isValid(dsApiKey, callbackEvent);
 
         EventCallbackRequestEvent eventPayload = callbackEvent.getEvent();
 
