@@ -1,7 +1,7 @@
-package dev.draft.signapp.service;
+package dev.draft.sign_app.service;
 
-import com.dropbox.sign.ApiException;
 import com.dropbox.sign.Configuration;
+import com.dropbox.sign.api.EmbeddedApi;
 import com.dropbox.sign.api.SignatureRequestApi;
 import com.dropbox.sign.auth.HttpBasicAuth;
 import com.dropbox.sign.model.*;
@@ -13,13 +13,14 @@ import java.util.List;
 
 @Service
 public class DropboxSignDemoService {
-
     @Autowired
     private Environment env;
 
     public String sendEmbeddedSignatureRequest() {
         try {
+
             String dsApiKey = env.getProperty("DS_API_KEY");
+            String dsClientId = env.getProperty("DS_CLIENT_ID");
             String dsTemplateId = env.getProperty("DS_TEMPLATE_ID");
             String signerName = env.getProperty("SIGNER_NAME");
             String signerEmail = env.getProperty("SIGNER_EMAIL");
@@ -27,7 +28,6 @@ public class DropboxSignDemoService {
 
             var apiClient = Configuration.getDefaultApiClient();
 
-            // Configure HTTP basic authorization: api_key
             var apiKey = (HttpBasicAuth) apiClient
                     .getAuthentication("api_key");
             apiKey.setUsername(dsApiKey);
@@ -39,28 +39,29 @@ public class DropboxSignDemoService {
                     .name(signerName)
                     .emailAddress(signerEmail);
 
+            var subSigningOptions = new SubSigningOptions()
+                    .draw(true)
+                    .type(true)
+                    .upload(true)
+                    .phone(false)
+                    .defaultType(SubSigningOptions.DefaultTypeEnum.DRAW);
+
 
             var data = new SignatureRequestCreateEmbeddedWithTemplateRequest()
+                    .clientId(dsClientId)
                     .templateIds(List.of(dsTemplateId))
                     .signers(List.of(signer))
+                    .signingOptions(subSigningOptions)
                     .testMode(true);
 
+            SignatureRequestGetResponse result = signatureRequestApi.signatureRequestCreateEmbeddedWithTemplate(data);
 
-            try {
-                SignatureRequestGetResponse result = signatureRequestApi.signatureRequestCreateEmbeddedWithTemplate(data);
+            var embeddedApi = new EmbeddedApi(apiClient);
 
-                return result.getSignatureRequest().getSigningUrl();
-            } catch (ApiException e) {
-                System.err.println("Exception when calling AccountApi#accountCreate");
-                System.err.println("Status code: " + e.getCode());
-                System.err.println("Reason: " + e.getResponseBody());
-                System.err.println("Response headers: " + e.getResponseHeaders());
-                e.printStackTrace();
+            EmbeddedSignUrlResponse response = embeddedApi.embeddedSignUrl(result.getSignatureRequest().getSignatures().get(0).getSignatureId());
 
-                return "Something went wrong";
-            }
+            return response.getEmbedded().getSignUrl();
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
