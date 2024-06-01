@@ -54,6 +54,7 @@ public class DropboxSignDemoController {
                         break;
                 default:
                     logger.info("DS event occured " + EventCallbackHelper.getCallbackType(callbackEvent));
+                    logger.info(eventPayload.getEventType().toString());
                     break;
             }
         }
