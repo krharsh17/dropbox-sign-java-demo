@@ -42,24 +42,32 @@ public class DropboxSignDemoController {
         EventCallbackRequestEvent eventPayload = callbackEvent.getEvent();
 
         if (validRequest) {
-            switch (EventCallbackHelper.getCallbackType(callbackEvent)) {
-                case "account_callback":
-                    logger.info("Account Callback called " + eventPayload);
+            switch (eventPayload.getEventType().toString()) {
+                case "callback_test":
+                    logger.info("Callback test payload received");
+                    logger.info(eventPayload.toString());
                     break;
                 case "signature_request_sent":
-                    logger.info("Signature request sent " + eventPayload);
+                    logger.info("Signature request sent");
                     break;
+                case "signature_request_viewed":
+                    logger.info("The signature request was viewed");
+                    break;
+                case "signature_request_signed":
+                    logger.info("The signature request was signed");
                 case "signature_request_all_signed":
-                        logger.info("Signature request signed " + eventPayload);
-                        break;
+                    logger.info("The signature request has been signed by all parties");
+                    break;
+                case "signature_request_downloadable":
+                    logger.info("The signed document can now be downloaded");
+                    break;
                 default:
-                    logger.info("DS event occured " + EventCallbackHelper.getCallbackType(callbackEvent));
-                    logger.info(eventPayload.getEventType().toString());
+                    logger.info("DS event occurred: "+ eventPayload.getEventType());
                     break;
             }
         }
 
-        return "Dropbox Sign API Event Received";
+        return "Hello API Event Received";
     }
 
 }
